@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.19.0/axios.min.js" integrity="sha512-1PySIDbtpe3dqJixTAKYVuIJFjhCh6B++coWLFxuQh1es5sQo6eMciiiR8ppJQE4/goMfeJgKZN0ajzWWwuCGg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="Athan.css">
+  <title>Athan</title>
+</head>
+<body>
+
+  <div class="starfield-bg">
+    <canvas id="stars"></canvas>
+  </div>
+
+  <div class="container content">
+      <div class="logo">
+         <h2>Ab.<span>Athan</span></h2>
+      </div>
+      <div class="Times-Athan">
+       <span id="gregorian-date"></span>
+       <span id="hijri-date"></span>
+       <span id="city-name">الجزائر</span>
+      </div>
+      <div class="Next-Athan" id="Next-Athan">
+        <h3>المغرب</h3>
+        <h3 id="Next-Athan-Time">00:00</h3>
+        <span id="countdown"></span>
+      </div>
+      <div class="Athan" id="Athan">
+        <div class="Athan-1" id="Athan-1">
+          <h3 class="الفجر">الفجر</h3>
+          <h3 id="Athan-1-time">00:00</h3>
+        </div>
+        <div class="Athan-2" id="Athan-2">
+          <h3 class="الشروق">الشروق</h3>
+          <h3 id="Athan-2-time">00:00</h3>
+        </div>
+        <div class="Athan-3" id="Athan-3">
+          <h3 class="الظهر">الظهر</h3>
+          <h3 id="Athan-3-time">00:00</h3>
+        </div>
+        <div class="Athan-4" id="Athan-4">
+          <h3 class="العصر">العصر</h3>
+          <h3 id="Athan-4-time">00:00</h3>
+        </div>
+        <div class="Athan-5" id="Athan-5">
+          <h3 class="المغرب">المغرب</h3>
+          <h3 id="Athan-5-time">00:00</h3>
+        </div>
+        <div class="Athan-6" id="Athan-6">
+          <h3 class="العشاء">العشاء</h3>
+          <h3 id="Athan-6-time">00:00</h3>
+        </div>
+      </div>
+  </div>
+
+  <script src="Athan.js"></script>
+  <script>
+    const canvas = document.getElementById('stars');
+    const ctx = canvas.getContext('2d');
+    const container = document.querySelector('.starfield-bg');
+
+    function resize() {
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const STAR_COUNT = 220;
+    const stars = [];
+
+    for (let i = 0; i < STAR_COUNT; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 1.4 + 0.3,
+        baseAlpha: Math.random() * 0.6 + 0.3,
+        twinkleSpeed: Math.random() * 0.02 + 0.005,
+        twinklePhase: Math.random() * Math.PI * 2,
+        driftSpeed: Math.random() * 0.05 + 0.01
+      });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (const star of stars) {
+        star.twinklePhase += star.twinkleSpeed;
+        const alpha = star.baseAlpha * (0.5 + 0.5 * Math.sin(star.twinklePhase));
+
+        star.y += star.driftSpeed;
+        if (star.y > canvas.height) {
+          star.y = 0;
+          star.x = Math.random() * canvas.width;
+        }
+
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+        ctx.fill();
+
+        if (star.radius > 1.1) {
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.radius * 3, 0, Math.PI * 2);
+          const glow = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, star.radius * 3);
+          glow.addColorStop(0, `rgba(180,200,255,${alpha * 0.3})`);
+          glow.addColorStop(1, 'rgba(180,200,255,0)');
+          ctx.fillStyle = glow;
+          ctx.fill();
+        }
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  </script>
+
+</body>
